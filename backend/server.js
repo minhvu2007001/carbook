@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const JWT_SECRET = 'carbook_secret_2024';
 
 ['data','uploads'].forEach(d => {
@@ -24,6 +24,11 @@ app.use('/images', express.static(path.join(__dirname, '../images')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname)));
 app.use(express.static(path.join(__dirname, '..')));
+
+// Serve index.html at root
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'index.html'));
+});
 
 const db = {
   cars:     new Datastore({ filename: path.join(__dirname, 'data/cars.db'),     autoload: true }),
