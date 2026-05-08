@@ -216,7 +216,7 @@
       const c = document.getElementById('blog-list-container');
       if (!c) return;
       try {
-        const blogs = await fetch('http://localhost:3000/api/blogs').then(r=>r.json());
+        const blogs = await fetch('https://carbook-production.up.railway.app/api/blogs').then(r=>r.json());
         if (!blogs.length) {
           c.innerHTML = '<div class="col-12"><div class="blog-empty"><span class="icon">📝</span><h4>Chưa có bài viết nào</h4><p>Hãy thêm bài viết từ Admin Panel</p></div></div>';
           return;
@@ -226,7 +226,7 @@
           const excerpt = b.content.length>110 ? b.content.substring(0,110)+'...' : b.content;
           return `<div class="col-md-4" style="opacity:1!important;visibility:visible!important;">
             <div class="blog-card">
-              <div class="blog-card-img" style="background-image:url('http://localhost:3000${b.image}')">
+              <div class="blog-card-img" style="background-image:url('https://carbook-production.up.railway.app${b.image}')">
                 <span class="blog-card-date">📅 ${date}</span>
               </div>
               <div class="blog-card-body">

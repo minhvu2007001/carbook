@@ -464,7 +464,7 @@
       const carousel = document.getElementById('index-car-carousel');
       if (!carousel) return;
       try {
-        const res = await fetch('http://localhost:3000/api/cars');
+        const res = await fetch('https://carbook-production.up.railway.app/api/cars');
         const cars = await res.json();
         if (!cars.length) {
           carousel.innerHTML = '<div class="item"><div class="text text-center py-4"><p style="color:#999">Chưa có xe nào</p></div></div>';
@@ -474,7 +474,7 @@
           <div class="item">
             <div class="car-wrap rounded" style="opacity:1!important;visibility:visible!important;">
               <div class="img rounded d-flex align-items-end"
-                   style="background-image:url('http://localhost:3000${car.image}');opacity:1!important;visibility:visible!important;">
+                   style="background-image:url('https://carbook-production.up.railway.app${car.image}');opacity:1!important;visibility:visible!important;">
               </div>
               <div class="text">
                 <h2 class="mb-0"><a href="car.html">${car.name}</a></h2>
@@ -505,7 +505,7 @@
       const container = document.getElementById('index-blog-container');
       if (!container) return;
       try {
-        const res = await fetch('http://localhost:3000/api/blogs');
+        const res = await fetch('https://carbook-production.up.railway.app/api/blogs');
         const blogs = await res.json();
         if (!blogs.length) {
           container.innerHTML = '<div class="col-12 text-center py-4" style="opacity:1"><p style="color:#999">Chưa có bài viết nào</p></div>';
@@ -518,7 +518,7 @@
             <div class="col-md-4 d-flex" style="opacity:1!important;visibility:visible!important;">
               <div class="blog-entry justify-content-end" style="opacity:1!important;visibility:visible!important;">
                 <a href="blog.html" class="block-20"
-                   style="background-image:url('http://localhost:3000${blog.image}');opacity:1!important;visibility:visible!important;">
+                   style="background-image:url('https://carbook-production.up.railway.app${blog.image}');opacity:1!important;visibility:visible!important;">
                 </a>
                 <div class="text pt-4">
                   <div class="meta mb-3">

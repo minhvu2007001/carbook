@@ -847,7 +847,7 @@ tbody tr:hover td { background: rgba(232,93,38,.02); }
 <div class="toast-wrap" id="toast-wrap"></div>
 
 <script>
-const API = 'http://localhost:3000/api';
+const API = 'https://carbook-production.up.railway.app/api';
 let TOKEN = localStorage.getItem('cb_token') || '';
 let curTab = 'dashboard';
 let curSettings = 'email';
@@ -972,7 +972,7 @@ async function loadCars(){
   const tb=document.getElementById('cars-tbody');
   if(!cars.length){tb.innerHTML='<tr><td colspan="8"><div class="empty-state"><span class="e-icon">🚗</span><h4>Chưa có xe nào</h4><p>Nhấn "+ Thêm mới" để bắt đầu</p></div></td></tr>';return;}
   tb.innerHTML=cars.map(c=>`<tr>
-    <td><img class="thumb" src="http://localhost:3000${c.image}" onerror="this.style.opacity=.3" alt="${c.name}"></td>
+    <td><img class="thumb" src="https://carbook-production.up.railway.app${c.image}" onerror="this.style.opacity=.3" alt="${c.name}"></td>
     <td><strong>${c.name}</strong>${c.description?`<br><small style="color:var(--muted)">${c.description.substring(0,40)}...</small>`:''}</td>
     <td><span class="badge badge-orange">${c.type}</span></td>
     <td>${c.seats}</td>
@@ -1007,7 +1007,7 @@ function editCar(c){
   document.getElementById('car-fuel').value=c.fuel;
   document.getElementById('car-desc').value=c.description||'';
   const p=document.getElementById('car-img-prev');
-  p.src='http://localhost:3000'+c.image; p.style.display='block';
+  p.src='https://carbook-production.up.railway.app'+c.image; p.style.display='block';
   document.getElementById('modal-car').classList.add('open');
 }
 async function saveCar(){
@@ -1093,7 +1093,7 @@ async function loadBlogs(){
   const tb=document.getElementById('blogs-tbody');
   if(!blogs.length){tb.innerHTML='<tr><td colspan="5"><div class="empty-state"><span class="e-icon">✍️</span><h4>Chưa có bài viết</h4><p>Nhấn "+ Thêm mới" để đăng bài</p></div></td></tr>';return;}
   tb.innerHTML=blogs.map(b=>`<tr>
-    <td><img class="thumb" src="http://localhost:3000${b.image}" onerror="this.style.opacity=.3" alt="${b.title}"></td>
+    <td><img class="thumb" src="https://carbook-production.up.railway.app${b.image}" onerror="this.style.opacity=.3" alt="${b.title}"></td>
     <td><strong>${b.title}</strong></td><td>${b.author}</td><td>${fmt(b.createdAt)}</td>
     <td><button class="btn btn-danger btn-sm" onclick="delBlog('${b._id}')">🗑 Xoá</button></td></tr>`).join('');
 }

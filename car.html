@@ -615,7 +615,7 @@
 
   <!-- ===== DATABASE + FILTER + BOOKING ===== -->
   <script>
-    const API = 'http://localhost:3000/api';
+    const API = 'https://carbook-production.up.railway.app/api';
     let allCars = [];
     let selectedCar = null;
 
@@ -640,7 +640,7 @@
       c.innerHTML = cars.map(car => `
         <div class="col-md-4">
           <div class="car-card">
-            <div class="car-card-img" style="background-image:url('http://localhost:3000${car.image}')">
+            <div class="car-card-img" style="background-image:url('https://carbook-production.up.railway.app${car.image}')">
               <span class="car-card-type">${car.type}</span>
             </div>
             <div class="car-card-body">
@@ -687,7 +687,7 @@
       selectedCar = car;
       document.getElementById('bk-car-name').textContent = car.name;
       document.getElementById('bk-car-price').textContent = '$'+car.price+'/ngày';
-      document.getElementById('bk-car-img').src = 'http://localhost:3000'+car.image;
+      document.getElementById('bk-car-img').src = 'https://carbook-production.up.railway.app'+car.image;
       ['bk-name','bk-email','bk-phone','bk-location','bk-pickup','bk-return','bk-notes'].forEach(id=>document.getElementById(id).value='');
       document.getElementById('bk-error').style.display='none';
       document.getElementById('bk-success').style.display='none';
