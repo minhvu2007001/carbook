@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CarBook Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f4f0;
+  --surface: #ffffff;
+  --surface2: #f0eeea;
+  --border: #e8e5e0;
+  --accent: #e85d26;
+  --accent-soft: #fef0eb;
+  --text: #1a1714;
+  --muted: #8c8680;
+  --success: #1a7f5a;
+  --success-soft: #edfaf4;
+  --danger: #c93030;
+  --danger-soft: #fef0f0;
+  --info: #2563eb;
+  --info-soft: #eff6ff;
+  --warning: #b45309;
+  --warning-soft: #fffbeb;
+  --sidebar-w: 252px;
+  --topbar-h: 60px;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 24px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Instrument Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ── LOGIN ── */
+.login-screen {
+  position: fixed; inset: 0;
+  background: linear-gradient(135deg, #fdf9f6 0%, #f5f0eb 100%);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+  animation: fadeIn .4s ease;
+}
+.login-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 44px 40px;
+  width: 400px;
+  box-shadow: var(--shadow-md);
+  animation: slideUp .5s cubic-bezier(.22,.68,0,1.2);
+}
+.login-logo {
+  font-family: 'Instrument Serif', serif;
+  font-size: 30px; color: var(--text);
+  margin-bottom: 4px;
+}
+.login-logo span { color: var(--accent); font-style: italic; }
+.login-sub { font-size: 13px; color: var(--muted); margin-bottom: 32px; }
+.login-label {
+  font-size: 11px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .8px;
+  display: block; margin-bottom: 7px;
+}
+.login-input {
+  font-family: inherit; width: 100%;
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 11px 14px;
+  color: var(--text); font-size: 14px;
+  transition: all .2s; margin-bottom: 16px;
+}
+.login-input:focus { outline: none; border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(232,93,38,.08); }
+.login-err {
+  background: var(--danger-soft); border: 1px solid #fecaca;
+  border-radius: 8px; padding: 10px 14px;
+  color: var(--danger); font-size: 13px;
+  margin-bottom: 16px; display: none;
+  animation: shake .4s ease;
+}
+@keyframes shake {
+  0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)}
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  position: fixed; top: 0; left: 0; bottom: 0;
+  display: flex; flex-direction: column;
+  z-index: 100;
+  transition: transform .3s cubic-bezier(.4,0,.2,1);
+}
+.sidebar-head {
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo {
+  font-family: 'Instrument Serif', serif;
+  font-size: 24px; color: var(--text);
+}
+.sidebar-logo span { color: var(--accent); font-style: italic; }
+.sidebar-tagline { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+.nav-section { padding: 12px 12px 4px; }
+.nav-section-label {
+  font-size: 10px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 1.2px;
+  padding: 6px 8px 4px; display: block;
+}
+.nav-btn {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: 9px;
+  cursor: pointer; font-size: 13.5px; font-weight: 500;
+  color: var(--muted); background: none; border: none;
+  width: 100%; text-align: left;
+  transition: all .18s ease;
+  margin-bottom: 1px; position: relative;
+}
+.nav-btn:hover { background: var(--bg); color: var(--text); }
+.nav-btn.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.nav-btn .icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+.nav-btn .label { flex: 1; }
+.nav-badge {
+  background: var(--accent); color: white;
+  font-size: 10px; font-weight: 700;
+  padding: 2px 7px; border-radius: 99px;
+  display: none;
+}
+
+.sidebar-foot {
+  margin-top: auto;
+  padding: 16px;
+  border-top: 1px solid var(--border);
+}
+.user-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px; border-radius: 10px;
+  background: var(--bg); margin-bottom: 10px;
+}
+.user-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--accent-soft);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.user-name { font-size: 13px; font-weight: 600; line-height: 1.2; }
+.user-role { font-size: 11px; color: var(--muted); }
+.foot-links { display: flex; gap: 8px; }
+.foot-link {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
+  font-size: 12px; color: var(--muted); text-decoration: none;
+  padding: 7px; border-radius: 8px; background: var(--bg);
+  transition: all .2s; cursor: pointer; border: none; font-family: inherit;
+}
+.foot-link:hover { color: var(--text); background: var(--surface2); }
+
+/* ── MAIN ── */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1; display: flex; flex-direction: column; min-height: 100vh;
+}
+.topbar {
+  height: var(--topbar-h);
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+}
+.topbar-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 20px; font-weight: 400;
+}
+.topbar-title span { color: var(--accent); font-style: italic; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+
+.page { padding: 28px; animation: fadeIn .3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+.tab { display: none; }
+.tab.active { display: block; animation: fadeIn .3s ease; }
+
+/* ── STAT CARDS ── */
+.stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px 22px;
+  display: flex; flex-direction: column; gap: 12px;
+  transition: all .25s ease; cursor: default;
+  box-shadow: var(--shadow);
+}
+.stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.stat-card-top { display: flex; align-items: center; justify-content: space-between; }
+.stat-card-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.stat-card-change { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 99px; }
+.stat-card-change.up { background: var(--success-soft); color: var(--success); }
+.stat-card-change.neutral { background: var(--bg); color: var(--muted); }
+.stat-card-val {
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px; line-height: 1; color: var(--text);
+}
+.stat-card-label { font-size: 12px; color: var(--muted); font-weight: 500; }
+
+/* ── CARD ── */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  margin-bottom: 20px; box-shadow: var(--shadow);
+}
+.card-head {
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-title { font-size: 14px; font-weight: 600; }
+.card-body { padding: 20px; }
+
+/* ── TABLE ── */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: var(--bg); }
+th {
+  padding: 11px 16px; text-align: left;
+  font-size: 10.5px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 1px;
+  border-bottom: 1px solid var(--border); white-space: nowrap;
+}
+td {
+  padding: 13px 16px;
+  border-bottom: 1px solid rgba(232,229,224,.6);
+  vertical-align: middle; font-size: 13.5px;
+}
+tr:last-child td { border-bottom: none; }
+tbody tr { transition: background .15s; }
+tbody tr:hover td { background: rgba(232,93,38,.02); }
+.thumb {
+  width: 58px; height: 40px;
+  object-fit: cover; border-radius: 7px;
+  background: var(--bg); display: block;
+}
+
+/* ── BADGE ── */
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 3px 10px; border-radius: 99px;
+  font-size: 11px; font-weight: 600; white-space: nowrap;
+}
+.badge-orange { background: var(--accent-soft); color: var(--accent); }
+.badge-green { background: var(--success-soft); color: var(--success); }
+.badge-blue { background: var(--info-soft); color: var(--info); }
+.badge-yellow { background: var(--warning-soft); color: var(--warning); }
+.badge-red { background: var(--danger-soft); color: var(--danger); }
+.badge-gray { background: var(--bg); color: var(--muted); }
+
+/* ── BUTTONS ── */
+.btn {
+  font-family: inherit; font-size: 13.5px; font-weight: 600;
+  padding: 9px 18px; border-radius: 9px; border: none;
+  cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+  transition: all .2s ease; text-decoration: none; white-space: nowrap;
+}
+.btn:active { transform: scale(.97); }
+.btn-primary {
+  background: var(--accent); color: white;
+  box-shadow: 0 2px 8px rgba(232,93,38,.25);
+}
+.btn-primary:hover { background: #d04d1a; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(232,93,38,.3); }
+.btn-danger { background: var(--danger); color: white; }
+.btn-danger:hover { opacity: .88; }
+.btn-ghost { background: transparent; color: var(--muted); border: 1.5px solid var(--border); }
+.btn-ghost:hover { color: var(--text); border-color: var(--text); }
+.btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 7px; }
+.btn-info { background: var(--info); color: white; }
+.btn-info:hover { opacity: .88; }
+
+/* ── FORM ── */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-grid .full { grid-column: 1 / -1; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label {
+  font-size: 11px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .8px;
+}
+.field input, .field select, .field textarea {
+  font-family: inherit; font-size: 13.5px;
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 9px; padding: 10px 13px; color: var(--text);
+  transition: all .2s; width: 100%;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none; border-color: var(--accent);
+  background: #fff; box-shadow: 0 0 0 3px rgba(232,93,38,.08);
+}
+.field textarea { resize: vertical; min-height: 90px; }
+.field select option { background: var(--surface); }
+
+/* ── UPLOAD ── */
+.upload-zone {
+  border: 2px dashed var(--border); border-radius: 10px;
+  padding: 18px; text-align: center; cursor: pointer;
+  transition: all .2s;
+}
+.upload-zone:hover { border-color: var(--accent); background: var(--accent-soft); }
+.upload-zone input { display: none; }
+.upload-preview { width: 100%; max-height: 130px; object-fit: cover; border-radius: 8px; margin-top: 10px; display: none; }
+
+/* ── MODAL ── */
+.modal-wrap {
+  position: fixed; inset: 0;
+  background: rgba(20,15,10,.5);
+  backdrop-filter: blur(6px);
+  z-index: 200; display: none;
+  align-items: center; justify-content: center; padding: 20px;
+}
+.modal-wrap.open { display: flex; animation: fadeIn .25s ease; }
+.modal {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; width: 100%; max-width: 580px;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0,0,0,.18);
+  animation: slideUp .3s cubic-bezier(.22,.68,0,1.1);
+}
+.modal-head {
+  padding: 20px 24px 18px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; background: var(--surface); z-index: 2;
+  border-radius: 16px 16px 0 0;
+}
+.modal-head h3 { font-size: 16px; font-weight: 700; }
+.modal-close {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--bg); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: var(--muted);
+  transition: all .15s;
+}
+.modal-close:hover { background: var(--border); color: var(--text); }
+.modal-body { padding: 22px 24px; }
+.modal-foot {
+  padding: 16px 24px; border-top: 1px solid var(--border);
+  display: flex; gap: 8px; justify-content: flex-end;
+}
+
+/* ── TOAST ── */
+.toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 11px; padding: 13px 18px;
+  font-size: 13.5px; font-weight: 500;
+  box-shadow: var(--shadow-md);
+  display: flex; align-items: center; gap: 10px;
+  min-width: 260px; max-width: 340px;
+  transform: translateX(120%); opacity: 0;
+  transition: all .35s cubic-bezier(.34,1.56,.64,1);
+}
+.toast.show { transform: translateX(0); opacity: 1; }
+.toast .t-icon { font-size: 18px; }
+.toast .t-close { margin-left: auto; background: none; border: none; cursor: pointer; color: var(--muted); font-size: 16px; }
+.toast.success { border-left: 3px solid var(--success); }
+.toast.error { border-left: 3px solid var(--danger); }
+.toast.info { border-left: 3px solid var(--info); }
+
+/* ── ACTIONS ── */
+.actions { display: flex; gap: 6px; }
+.empty-state { text-align: center; padding: 52px 24px; }
+.empty-state .e-icon { font-size: 44px; margin-bottom: 14px; display: block; opacity: .5; }
+.empty-state h4 { font-family: 'Instrument Serif', serif; font-size: 20px; margin-bottom: 6px; }
+.empty-state p { color: var(--muted); font-size: 13px; }
+
+/* ── SETTINGS GRID ── */
+.settings-grid { display: grid; grid-template-columns: 260px 1fr; gap: 20px; }
+.settings-nav { display: flex; flex-direction: column; gap: 4px; }
+.settings-nav-btn {
+  padding: 10px 14px; border-radius: 9px; border: none; background: none;
+  font-family: inherit; font-size: 13.5px; font-weight: 500;
+  color: var(--muted); cursor: pointer; text-align: left;
+  transition: all .15s; display: flex; align-items: center; gap: 8px;
+}
+.settings-nav-btn:hover { background: var(--bg); color: var(--text); }
+.settings-nav-btn.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.settings-panel { display: none; }
+.settings-panel.active { display: block; animation: fadeIn .25s ease; }
+
+/* ── TOGGLE ── */
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border); }
+.toggle-row:last-child { border-bottom: none; }
+.toggle-info h5 { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+.toggle-info p { font-size: 12px; color: var(--muted); }
+.toggle {
+  position: relative; width: 44px; height: 24px;
+  background: var(--border); border-radius: 99px;
+  cursor: pointer; transition: background .25s;
+  flex-shrink: 0;
+}
+.toggle input { display: none; }
+.toggle::after {
+  content: ''; position: absolute;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: white; top: 3px; left: 3px;
+  transition: transform .25s cubic-bezier(.34,1.56,.64,1);
+  box-shadow: 0 1px 4px rgba(0,0,0,.2);
+}
+.toggle.on { background: var(--success); }
+.toggle.on::after { transform: translateX(20px); }
+
+/* ── SEARCH ── */
+.search-bar {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 9px; padding: 8px 12px;
+  transition: all .2s;
+}
+.search-bar:focus-within { border-color: var(--accent); background: white; }
+.search-bar input { border: none; background: none; font-family: inherit; font-size: 13.5px; color: var(--text); outline: none; flex: 1; }
+.search-bar .s-icon { color: var(--muted); font-size: 15px; }
+
+/* ── INFO BOX ── */
+.info-box {
+  background: var(--info-soft); border: 1px solid #bfdbfe;
+  border-radius: 10px; padding: 14px 16px;
+  font-size: 13px; color: #1e40af;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.info-box .ib-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+/* ── QUICK STATS MINI ── */
+.mini-stat { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.mini-stat:last-child { border-bottom: none; }
+.mini-stat-label { font-size: 13px; color: var(--muted); }
+.mini-stat-val { font-size: 14px; font-weight: 700; }
+
+/* ── CHART BAR ── */
+.chart-bar { display: flex; align-items: flex-end; gap: 8px; height: 80px; padding: 0 4px; }
+.bar-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.bar-fill { width: 100%; border-radius: 4px 4px 0 0; background: var(--accent-soft); transition: height .5s cubic-bezier(.34,1.2,.64,1); min-height: 4px; }
+.bar-fill.active { background: var(--accent); }
+.bar-label { font-size: 10px; color: var(--muted); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .settings-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">Car<span>Book</span></div>
+    <p class="login-sub">Đăng nhập vào trang quản trị</p>
+    <div class="login-err" id="login-err"></div>
+    <div class="field" style="margin-bottom:16px">
+      <label class="login-label">Tên đăng nhập</label>
+      <input class="login-input" id="l-user" value="admin" placeholder="admin">
+    </div>
+    <div class="field" style="margin-bottom:20px">
+      <label class="login-label">Mật khẩu</label>
+      <input class="login-input" id="l-pass" type="password" value="admin123" placeholder="••••••••">
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:15px;padding:12px" onclick="doLogin()">
+      Đăng nhập →
+    </button>
+    <p style="margin-top:16px;font-size:12px;color:var(--muted);text-align:center">Mặc định: admin / admin123</p>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-head">
+    <div class="sidebar-logo">Car<span>Book</span></div>
+    <div class="sidebar-tagline">Admin Dashboard</div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding-bottom:8px">
+    <div class="nav-section">
+      <span class="nav-section-label">Tổng quan</span>
+      <button class="nav-btn active" onclick="switchTab('dashboard',this)">
+        <span class="icon">◈</span><span class="label">Dashboard</span>
+      </button>
+    </div>
+    <div class="nav-section">
+      <span class="nav-section-label">Quản lý nội dung</span>
+      <button class="nav-btn" onclick="switchTab('cars',this)">
+        <span class="icon">🚗</span><span class="label">Xe hơi</span>
+      </button>
+      <button class="nav-btn" onclick="switchTab('bookings',this)">
+        <span class="icon">📅</span><span class="label">Đặt xe</span>
+        <span class="nav-badge" id="nb-bookings">0</span>
+      </button>
+      <button class="nav-btn" onclick="switchTab('blogs',this)">
+        <span class="icon">✍️</span><span class="label">Bài viết</span>
+      </button>
+      <button class="nav-btn" onclick="switchTab('contacts',this)">
+        <span class="icon">💬</span><span class="label">Liên hệ</span>
+        <span class="nav-badge" id="nb-contacts">0</span>
+      </button>
+    </div>
+    <div class="nav-section">
+      <span class="nav-section-label">Cài đặt</span>
+      <button class="nav-btn" onclick="switchTab('settings',this)">
+        <span class="icon">⚙️</span><span class="label">Cài đặt hệ thống</span>
+      </button>
+    </div>
+  </div>
+  <div class="sidebar-foot">
+    <div class="user-row">
+      <div class="user-avatar">👤</div>
+      <div><div class="user-name" id="sidebar-uname">Admin</div><div class="user-role">Quản trị viên</div></div>
+    </div>
+    <div class="foot-links">
+      <a class="foot-link" href="../index.html" target="_blank">🌐 Website</a>
+      <button class="foot-link" onclick="doLogout()">🚪 Thoát</button>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard</div>
+    <div class="topbar-right">
+      <button class="btn btn-primary btn-sm" id="add-btn" onclick="openAddModal()" style="display:none">+ Thêm mới</button>
+    </div>
+  </header>
+
+  <div class="page">
+
+    <!-- ── DASHBOARD ── -->
+    <div class="tab active" id="tab-dashboard">
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-card-icon" style="background:var(--accent-soft);font-size:20px">🚗</div>
+            <span class="stat-card-change neutral" id="sc-cars-lbl">xe</span>
+          </div>
+          <div class="stat-card-val" id="sc-cars">—</div>
+          <div class="stat-card-label">Tổng xe trong kho</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-card-icon" style="background:var(--warning-soft);font-size:20px">📅</div>
+            <span class="stat-card-change up" id="sc-pending-lbl">chờ</span>
+          </div>
+          <div class="stat-card-val" id="sc-pending">—</div>
+          <div class="stat-card-label">Đặt xe chờ xử lý</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-card-icon" style="background:var(--info-soft);font-size:20px">✍️</div>
+            <span class="stat-card-change neutral">bài</span>
+          </div>
+          <div class="stat-card-val" id="sc-blogs">—</div>
+          <div class="stat-card-label">Bài viết đã đăng</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-card-icon" style="background:var(--success-soft);font-size:20px">💬</div>
+            <span class="stat-card-change up" id="sc-contacts-lbl">mới</span>
+          </div>
+          <div class="stat-card-val" id="sc-contacts">—</div>
+          <div class="stat-card-label">Tin nhắn liên hệ</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 320px;gap:20px">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">📅 Đặt xe gần đây</span>
+            <button class="btn btn-ghost btn-sm" onclick="switchTab('bookings', document.querySelector('[onclick*=bookings]'))">Xem tất cả →</button>
+          </div>
+          <div class="table-wrap">
+            <table><thead><tr><th>Khách hàng</th><th>Xe</th><th>Ngày nhận</th><th>Trạng thái</th></tr></thead>
+            <tbody id="dash-bookings"></tbody></table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">📊 Thống kê nhanh</span></div>
+          <div class="card-body">
+            <div id="dash-stats">
+              <div class="mini-stat"><span class="mini-stat-label">Đã xác nhận</span><span class="mini-stat-val" id="ds-confirmed">—</span></div>
+              <div class="mini-stat"><span class="mini-stat-label">Hoàn thành</span><span class="mini-stat-val" id="ds-done">—</span></div>
+              <div class="mini-stat"><span class="mini-stat-label">Đã huỷ</span><span class="mini-stat-val" id="ds-cancelled">—</span></div>
+              <div class="mini-stat"><span class="mini-stat-label">Tổng đặt xe</span><span class="mini-stat-val" id="ds-total">—</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CARS ── -->
+    <div class="tab" id="tab-cars">
+      <div class="card">
+        <div class="card-head"><span class="card-title">🚗 Danh sách xe</span></div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Ảnh</th><th>Tên xe</th><th>Loại</th><th>Ghế</th><th>Giá/ngày</th><th>Hộp số</th><th>Nhiên liệu</th><th>Thao tác</th></tr></thead>
+          <tbody id="cars-tbody"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── BOOKINGS ── -->
+    <div class="tab" id="tab-bookings">
+      <div class="card">
+        <div class="card-head"><span class="card-title">📅 Quản lý đặt xe</span></div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Khách hàng</th><th>Xe</th><th>SĐT</th><th>Ngày nhận</th><th>Ngày trả</th><th>Ghi chú</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+          <tbody id="bookings-tbody"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── BLOGS ── -->
+    <div class="tab" id="tab-blogs">
+      <div class="card">
+        <div class="card-head"><span class="card-title">✍️ Bài viết</span></div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Ảnh</th><th>Tiêu đề</th><th>Tác giả</th><th>Ngày đăng</th><th>Thao tác</th></tr></thead>
+          <tbody id="blogs-tbody"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CONTACTS ── -->
+    <div class="tab" id="tab-contacts">
+      <div class="card">
+        <div class="card-head"><span class="card-title">💬 Tin nhắn liên hệ</span></div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Tên</th><th>Email</th><th>Chủ đề</th><th>Nội dung</th><th>Ngày</th><th>Thao tác</th></tr></thead>
+          <tbody id="contacts-tbody"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SETTINGS ── -->
+    <div class="tab" id="tab-settings">
+      <div class="settings-grid">
+        <div>
+          <div class="card">
+            <div class="card-body" style="padding:12px">
+              <div class="settings-nav">
+                <button class="settings-nav-btn active" onclick="switchSettings('email',this)">✉️ Email tự động</button>
+                <button class="settings-nav-btn" onclick="switchSettings('security',this)">🔐 Bảo mật</button>
+                <button class="settings-nav-btn" onclick="switchSettings('siteinfo',this)">🏢 Thông tin website</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <!-- Email Settings -->
+          <div class="settings-panel active" id="sp-email">
+            <div class="card">
+              <div class="card-head"><span class="card-title">✉️ Cấu hình Email tự động</span></div>
+              <div class="card-body">
+                <div class="info-box" style="margin-bottom:20px">
+                  <span class="ib-icon">💡</span>
+                  <div>Khi có đặt xe hoặc liên hệ mới, hệ thống sẽ tự động gửi email thông báo cho bạn và khách hàng.<br>
+                  <strong>Lấy App Password Gmail:</strong> Google Account → Bảo mật → Xác minh 2 bước → App Passwords → Tạo mới</div>
+                </div>
+                <div class="toggle-row">
+                  <div class="toggle-info">
+                    <h5>Kích hoạt email tự động</h5>
+                    <p>Gửi email khi có đặt xe / liên hệ mới</p>
+                  </div>
+                  <div class="toggle" id="toggle-email" onclick="toggleEl(this)"></div>
+                </div>
+                <div class="divider"></div>
+                <div class="form-grid">
+                  <div class="field full">
+                    <label>Gmail của bạn *</label>
+                    <input type="email" id="em-user" placeholder="youremail@gmail.com">
+                  </div>
+                  <div class="field full">
+                    <label>App Password Gmail *</label>
+                    <input type="password" id="em-pass" placeholder="xxxx xxxx xxxx xxxx">
+                  </div>
+                </div>
+                <div style="display:flex;gap:10px;margin-top:16px">
+                  <button class="btn btn-primary" onclick="saveEmail()">Lưu cấu hình</button>
+                  <button class="btn btn-ghost" onclick="testEmail()">📤 Gửi test email</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Security Settings -->
+          <div class="settings-panel" id="sp-security">
+            <div class="card">
+              <div class="card-head"><span class="card-title">🔐 Đổi mật khẩu</span></div>
+              <div class="card-body">
+                <div class="form-grid" style="max-width:420px">
+                  <div class="field full">
+                    <label>Mật khẩu hiện tại</label>
+                    <input type="password" id="pw-old" placeholder="Nhập mật khẩu cũ">
+                  </div>
+                  <div class="field full">
+                    <label>Mật khẩu mới</label>
+                    <input type="password" id="pw-new" placeholder="Tối thiểu 6 ký tự">
+                  </div>
+                  <div class="field full">
+                    <label>Xác nhận mật khẩu mới</label>
+                    <input type="password" id="pw-confirm" placeholder="Nhập lại mật khẩu mới">
+                  </div>
+                  <div class="full">
+                    <button class="btn btn-primary" onclick="changePassword()">Đổi mật khẩu</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Site Info Settings -->
+          <div class="settings-panel" id="sp-siteinfo">
+            <div class="card">
+              <div class="card-head"><span class="card-title">🏢 Thông tin website</span></div>
+              <div class="card-body">
+                <div class="info-box" style="margin-bottom:20px">
+                  <span class="ib-icon">ℹ️</span>
+                  <div>Thông tin này sẽ hiển thị ở footer và trang liên hệ. Sau khi lưu, copy đoạn code vào các file HTML.</div>
+                </div>
+                <div class="form-grid">
+                  <div class="field full"><label>Tên công ty</label><input id="si-name" placeholder="CarBook Vietnam"></div>
+                  <div class="field full"><label>Địa chỉ</label><input id="si-addr" placeholder="123 Đường ABC, Hà Nội"></div>
+                  <div class="field"><label>Số điện thoại</label><input id="si-phone" placeholder="+84 901 234 567"></div>
+                  <div class="field"><label>Email liên hệ</label><input id="si-email" placeholder="info@carbook.vn"></div>
+                  <div class="field"><label>Facebook URL</label><input id="si-fb" placeholder="https://facebook.com/..."></div>
+                  <div class="field"><label>Instagram URL</label><input id="si-ig" placeholder="https://instagram.com/..."></div>
+                  <div class="field"><label>Giờ làm việc</label><input id="si-hours" placeholder="T2–T7: 8:00–18:00"></div>
+                  <div class="field"><label>Slogan</label><input id="si-slogan" placeholder="Fast & Easy Car Rental"></div>
+                </div>
+                <div style="margin-top:16px;display:flex;gap:10px">
+                  <button class="btn btn-primary" onclick="saveSiteInfo()">Lưu thông tin</button>
+                  <button class="btn btn-ghost" onclick="copySiteInfoCode()">📋 Copy code HTML</button>
+                </div>
+                <div id="si-code-preview" style="margin-top:16px;display:none">
+                  <div class="card-title" style="margin-bottom:8px;font-size:12px">Code để dán vào footer HTML:</div>
+                  <textarea id="si-code" class="field" style="font-family:monospace;font-size:11px;height:160px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;width:100%;resize:none"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page -->
+</div><!-- /main -->
+
+<!-- MODAL XE -->
+<div class="modal-wrap" id="modal-car">
+  <div class="modal">
+    <div class="modal-head"><h3 id="modal-car-title">Thêm xe mới</h3><button class="modal-close" onclick="closeModal('modal-car')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="car-id">
+      <div class="form-grid">
+        <div class="field full"><label>Tên xe *</label><input id="car-name" placeholder="VD: Toyota Camry 2024"></div>
+        <div class="field"><label>Loại xe</label>
+          <select id="car-type"><option value="sedan">Sedan</option><option value="suv">SUV</option><option value="hatchback">Hatchback</option><option value="pickup">Pickup</option><option value="luxury">Luxury</option></select>
+        </div>
+        <div class="field"><label>Giá / ngày ($) *</label><input id="car-price" type="number" placeholder="99"></div>
+        <div class="field"><label>Số ghế</label><input id="car-seats" type="number" value="4" min="2" max="9"></div>
+        <div class="field"><label>Số cửa</label><input id="car-doors" type="number" value="4" min="2" max="5"></div>
+        <div class="field"><label>Hành lý</label><input id="car-luggage" type="number" value="2" min="0"></div>
+        <div class="field"><label>Hộp số</label>
+          <select id="car-trans"><option value="Automatic">Tự động</option><option value="Manual">Số sàn</option></select>
+        </div>
+        <div class="field"><label>Nhiên liệu</label>
+          <select id="car-fuel"><option value="Gasoline">Xăng</option><option value="Diesel">Dầu</option><option value="Electric">Điện</option><option value="Hybrid">Hybrid</option></select>
+        </div>
+        <div class="field full"><label>Mô tả ngắn</label><textarea id="car-desc" rows="2" placeholder="Mô tả về xe..."></textarea></div>
+        <div class="field full"><label>Ảnh xe</label>
+          <div class="upload-zone" onclick="document.getElementById('car-img-inp').click()">
+            <div style="font-size:24px;margin-bottom:4px">📷</div>
+            <div style="font-size:13px;color:var(--muted)">Click để chọn ảnh</div>
+            <input type="file" id="car-img-inp" accept="image/*" onchange="previewImg(this,'car-img-prev')">
+          </div>
+          <img id="car-img-prev" class="upload-preview">
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-car')">Huỷ</button>
+      <button class="btn btn-primary" onclick="saveCar()">💾 Lưu xe</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL BLOG -->
+<div class="modal-wrap" id="modal-blog">
+  <div class="modal">
+    <div class="modal-head"><h3>Thêm bài viết</h3><button class="modal-close" onclick="closeModal('modal-blog')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field full"><label>Tiêu đề *</label><input id="blog-title" placeholder="Nhập tiêu đề bài viết"></div>
+        <div class="field"><label>Tác giả</label><input id="blog-author" value="Admin"></div>
+        <div class="field"><label>Ảnh bìa</label>
+          <div class="upload-zone" style="padding:12px" onclick="document.getElementById('blog-img-inp').click()">
+            <div style="font-size:13px;color:var(--muted)">📷 Chọn ảnh bìa</div>
+            <input type="file" id="blog-img-inp" accept="image/*" onchange="previewImg(this,'blog-img-prev')">
+          </div>
+          <img id="blog-img-prev" class="upload-preview">
+        </div>
+        <div class="field full"><label>Nội dung *</label><textarea id="blog-content" rows="6" placeholder="Nội dung bài viết..."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-blog')">Huỷ</button>
+      <button class="btn btn-primary" onclick="saveBlog()">💾 Đăng bài</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CHI TIẾT BOOKING -->
+<div class="modal-wrap" id="modal-booking">
+  <div class="modal">
+    <div class="modal-head"><h3>Chi tiết đặt xe</h3><button class="modal-close" onclick="closeModal('modal-booking')">✕</button></div>
+    <div class="modal-body" id="booking-detail"></div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('modal-booking')">Đóng</button></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+const API = 'http://localhost:3000/api';
+let TOKEN = localStorage.getItem('cb_token') || '';
+let curTab = 'dashboard';
+let curSettings = 'email';
+
+// ── AUTH ──
+function hdrs(json=true) {
+  const h = {'Authorization':'Bearer '+TOKEN};
+  if(json) h['Content-Type']='application/json';
+  return h;
+}
+
+async function doLogin() {
+  const u=document.getElementById('l-user').value;
+  const p=document.getElementById('l-pass').value;
+  const err=document.getElementById('login-err');
+  try {
+    const res=await fetch(API+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+    const d=await res.json();
+    if(!res.ok){err.textContent='❌ '+d.error;err.style.display='block';return;}
+    TOKEN=d.token; localStorage.setItem('cb_token',TOKEN);
+    document.getElementById('sidebar-uname').textContent=d.username;
+    document.getElementById('login-screen').style.display='none';
+    loadDashboard();
+  } catch(e){ err.textContent='❌ Không kết nối được server!'; err.style.display='block'; }
+}
+
+function doLogout(){ localStorage.removeItem('cb_token'); TOKEN=''; location.reload(); }
+
+// ── NAV ──
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  el.classList.add('active');
+  curTab=tab;
+  const T={dashboard:'Dashboard',cars:'Xe hơi',bookings:'Đặt xe',blogs:'Bài viết',contacts:'Liên hệ',settings:'Cài đặt'};
+  document.getElementById('topbar-title').innerHTML = T[tab]+(tab==='cars'||tab==='blogs'?'':'' );
+  document.getElementById('add-btn').style.display=(tab==='cars'||tab==='blogs')?'':'none';
+  if(tab==='dashboard') loadDashboard();
+  if(tab==='cars') loadCars();
+  if(tab==='bookings') loadBookings();
+  if(tab==='blogs') loadBlogs();
+  if(tab==='contacts') loadContacts();
+  if(tab==='settings') loadEmailConfig();
+}
+
+function switchSettings(s, el) {
+  document.querySelectorAll('.settings-nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.settings-panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('sp-'+s).classList.add('active');
+  curSettings=s;
+}
+
+function openAddModal(){
+  if(curTab==='cars'){resetCarForm();document.getElementById('modal-car').classList.add('open');}
+  if(curTab==='blogs'){resetBlogForm();document.getElementById('modal-blog').classList.add('open');}
+}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+// ── TOAST ──
+function toast(msg, type='success') {
+  const wrap=document.getElementById('toast-wrap');
+  const t=document.createElement('div');
+  const icons={success:'✅',error:'❌',info:'ℹ️'};
+  t.className='toast '+type;
+  t.innerHTML=`<span class="t-icon">${icons[type]||'✅'}</span><span>${msg}</span><button class="t-close" onclick="this.parentElement.remove()">×</button>`;
+  wrap.appendChild(t);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),400);},3500);
+}
+
+function fmt(d){return new Date(d).toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'});}
+function previewImg(inp,id){const p=document.getElementById(id);if(inp.files?.[0]){const r=new FileReader();r.onload=e=>{p.src=e.target.result;p.style.display='block';};r.readAsDataURL(inp.files[0]);}}
+
+const statusMap={
+  pending:{label:'Chờ duyệt',cls:'badge-yellow'},
+  confirmed:{label:'Xác nhận',cls:'badge-green'},
+  done:{label:'Hoàn thành',cls:'badge-blue'},
+  cancelled:{label:'Đã huỷ',cls:'badge-red'}
+};
+
+// ── DASHBOARD ──
+async function loadDashboard(){
+  const [cars,bookings,blogs,contacts]=await Promise.all([
+    fetch(API+'/cars').then(r=>r.json()).catch(()=>[]),
+    fetch(API+'/bookings',{headers:hdrs()}).then(r=>r.ok?r.json():[]).catch(()=>[]),
+    fetch(API+'/blogs').then(r=>r.json()).catch(()=>[]),
+    fetch(API+'/contacts',{headers:hdrs()}).then(r=>r.ok?r.json():[]).catch(()=>[]),
+  ]);
+  const pending=bookings.filter(b=>b.status==='pending').length;
+  document.getElementById('sc-cars').textContent=cars.length;
+  document.getElementById('sc-pending').textContent=pending;
+  document.getElementById('sc-blogs').textContent=blogs.length;
+  document.getElementById('sc-contacts').textContent=contacts.length;
+
+  // Badges
+  const nb=document.getElementById('nb-bookings');
+  nb.textContent=pending; nb.style.display=pending?'':'none';
+  const nc=document.getElementById('nb-contacts');
+  nc.textContent=contacts.length; nc.style.display=contacts.length?'':'none';
+
+  // Stats
+  document.getElementById('ds-confirmed').textContent=bookings.filter(b=>b.status==='confirmed').length;
+  document.getElementById('ds-done').textContent=bookings.filter(b=>b.status==='done').length;
+  document.getElementById('ds-cancelled').textContent=bookings.filter(b=>b.status==='cancelled').length;
+  document.getElementById('ds-total').textContent=bookings.length;
+
+  // Recent bookings table
+  const tbody=document.getElementById('dash-bookings');
+  tbody.innerHTML=bookings.slice(0,6).map(b=>{
+    const s=statusMap[b.status]||statusMap.pending;
+    return `<tr><td><strong>${b.name}</strong><br><small style="color:var(--muted)">${b.email}</small></td>
+    <td>${b.carName}</td><td>${b.pickupDate}</td>
+    <td><span class="badge ${s.cls}">${s.label}</span></td></tr>`;
+  }).join('')||'<tr><td colspan="4"><div class="empty-state"><span class="e-icon">📅</span><h4>Chưa có đặt xe</h4></div></td></tr>';
+}
+
+// ── CARS ──
+async function loadCars(){
+  const cars=await fetch(API+'/cars').then(r=>r.json()).catch(()=>[]);
+  const tb=document.getElementById('cars-tbody');
+  if(!cars.length){tb.innerHTML='<tr><td colspan="8"><div class="empty-state"><span class="e-icon">🚗</span><h4>Chưa có xe nào</h4><p>Nhấn "+ Thêm mới" để bắt đầu</p></div></td></tr>';return;}
+  tb.innerHTML=cars.map(c=>`<tr>
+    <td><img class="thumb" src="http://localhost:3000${c.image}" onerror="this.style.opacity=.3" alt="${c.name}"></td>
+    <td><strong>${c.name}</strong>${c.description?`<br><small style="color:var(--muted)">${c.description.substring(0,40)}...</small>`:''}</td>
+    <td><span class="badge badge-orange">${c.type}</span></td>
+    <td>${c.seats}</td>
+    <td><strong>$${c.price}</strong><span style="color:var(--muted)">/ngày</span></td>
+    <td>${c.transmission==='Automatic'?'Tự động':'Số sàn'}</td>
+    <td>${c.fuel}</td>
+    <td class="actions">
+      <button class="btn btn-ghost btn-sm" onclick='editCar(${JSON.stringify(c).replace(/'/g,"&#39;")})'>✏️</button>
+      <button class="btn btn-danger btn-sm" onclick="delCar('${c._id}')">🗑</button>
+    </td></tr>`).join('');
+}
+function resetCarForm(){
+  document.getElementById('car-id').value='';
+  document.getElementById('modal-car-title').textContent='Thêm xe mới';
+  ['car-name','car-price','car-desc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('car-seats').value=4;
+  document.getElementById('car-doors').value=4;
+  document.getElementById('car-luggage').value=2;
+  document.getElementById('car-img-inp').value='';
+  document.getElementById('car-img-prev').style.display='none';
+}
+function editCar(c){
+  document.getElementById('car-id').value=c._id;
+  document.getElementById('modal-car-title').textContent='Chỉnh sửa xe';
+  document.getElementById('car-name').value=c.name;
+  document.getElementById('car-type').value=c.type;
+  document.getElementById('car-price').value=c.price;
+  document.getElementById('car-seats').value=c.seats;
+  document.getElementById('car-doors').value=c.doors;
+  document.getElementById('car-luggage').value=c.luggage;
+  document.getElementById('car-trans').value=c.transmission;
+  document.getElementById('car-fuel').value=c.fuel;
+  document.getElementById('car-desc').value=c.description||'';
+  const p=document.getElementById('car-img-prev');
+  p.src='http://localhost:3000'+c.image; p.style.display='block';
+  document.getElementById('modal-car').classList.add('open');
+}
+async function saveCar(){
+  const id=document.getElementById('car-id').value;
+  const fd=new FormData();
+  fd.append('name',document.getElementById('car-name').value);
+  fd.append('type',document.getElementById('car-type').value);
+  fd.append('price',document.getElementById('car-price').value);
+  fd.append('seats',document.getElementById('car-seats').value);
+  fd.append('doors',document.getElementById('car-doors').value);
+  fd.append('luggage',document.getElementById('car-luggage').value);
+  fd.append('transmission',document.getElementById('car-trans').value);
+  fd.append('fuel',document.getElementById('car-fuel').value);
+  fd.append('description',document.getElementById('car-desc').value);
+  const img=document.getElementById('car-img-inp').files[0];
+  if(img) fd.append('image',img);
+  const res=await fetch(id?API+'/cars/'+id:API+'/cars',{method:id?'PUT':'POST',headers:{'Authorization':'Bearer '+TOKEN},body:fd});
+  const d=await res.json();
+  res.ok?(toast(d.message),closeModal('modal-car'),loadCars()):toast(d.error,'error');
+}
+async function delCar(id){
+  if(!confirm('Xoá xe này?')) return;
+  const r=await fetch(API+'/cars/'+id,{method:'DELETE',headers:hdrs()});
+  toast((await r.json()).message); loadCars();
+}
+
+// ── BOOKINGS ──
+async function loadBookings(){
+  const bks=await fetch(API+'/bookings',{headers:hdrs()}).then(r=>r.ok?r.json():[]).catch(()=>[]);
+  const tb=document.getElementById('bookings-tbody');
+  if(!bks.length){tb.innerHTML='<tr><td colspan="8"><div class="empty-state"><span class="e-icon">📅</span><h4>Chưa có đặt xe</h4></div></td></tr>';return;}
+  tb.innerHTML=bks.map(b=>{
+    const s=statusMap[b.status]||statusMap.pending;
+    return `<tr>
+    <td><strong>${b.name}</strong><br><small style="color:var(--muted)">${b.email}</small></td>
+    <td>${b.carName}</td><td>${b.phone}</td>
+    <td>${b.pickupDate}</td><td>${b.returnDate}</td>
+    <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${b.notes||'—'}</td>
+    <td>
+      <select style="font-family:inherit;font-size:12px;padding:4px 8px;border:1.5px solid var(--border);border-radius:7px;background:var(--bg);cursor:pointer" onchange="updateStatus('${b._id}',this.value)">
+        <option value="pending" ${b.status==='pending'?'selected':''}>⏳ Chờ duyệt</option>
+        <option value="confirmed" ${b.status==='confirmed'?'selected':''}>✅ Xác nhận</option>
+        <option value="done" ${b.status==='done'?'selected':''}>🎉 Hoàn thành</option>
+        <option value="cancelled" ${b.status==='cancelled'?'selected':''}>❌ Huỷ</option>
+      </select>
+    </td>
+    <td class="actions">
+      <button class="btn btn-info btn-sm" onclick='showBooking(${JSON.stringify(b).replace(/'/g,"&#39;")})'>👁</button>
+      <button class="btn btn-danger btn-sm" onclick="delBooking('${b._id}')">🗑</button>
+    </td></tr>`;
+  }).join('');
+}
+function showBooking(b){
+  const s=statusMap[b.status]||statusMap.pending;
+  document.getElementById('booking-detail').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">KHÁCH HÀNG</div><div style="font-weight:600">${b.name}</div></div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">TRẠNG THÁI</div><span class="badge ${s.cls}">${s.label}</span></div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">EMAIL</div><div>${b.email}</div></div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">SĐT</div><div>${b.phone}</div></div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">XE ĐẶT</div><div style="font-weight:600">${b.carName}</div></div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">NGÀY ĐẶT</div><div>${fmt(b.createdAt)}</div></div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">NGÀY NHẬN</div><div style="font-weight:600">${b.pickupDate}</div></div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">NGÀY TRẢ</div><div style="font-weight:600">${b.returnDate}</div></div>
+      ${b.pickupLocation?`<div class="full" style="grid-column:1/-1"><div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">ĐỊA ĐIỂM NHẬN</div><div>${b.pickupLocation}</div></div>`:''}
+      ${b.notes?`<div style="grid-column:1/-1"><div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">GHI CHÚ</div><div>${b.notes}</div></div>`:''}
+    </div>`;
+  document.getElementById('modal-booking').classList.add('open');
+}
+async function updateStatus(id,status){
+  const r=await fetch(API+'/bookings/'+id+'/status',{method:'PUT',headers:hdrs(),body:JSON.stringify({status})});
+  toast((await r.json()).message);
+}
+async function delBooking(id){
+  if(!confirm('Xoá đặt xe này?')) return;
+  const r=await fetch(API+'/bookings/'+id,{method:'DELETE',headers:hdrs()});
+  toast((await r.json()).message); loadBookings();
+}
+
+// ── BLOGS ──
+async function loadBlogs(){
+  const blogs=await fetch(API+'/blogs').then(r=>r.json()).catch(()=>[]);
+  const tb=document.getElementById('blogs-tbody');
+  if(!blogs.length){tb.innerHTML='<tr><td colspan="5"><div class="empty-state"><span class="e-icon">✍️</span><h4>Chưa có bài viết</h4><p>Nhấn "+ Thêm mới" để đăng bài</p></div></td></tr>';return;}
+  tb.innerHTML=blogs.map(b=>`<tr>
+    <td><img class="thumb" src="http://localhost:3000${b.image}" onerror="this.style.opacity=.3" alt="${b.title}"></td>
+    <td><strong>${b.title}</strong></td><td>${b.author}</td><td>${fmt(b.createdAt)}</td>
+    <td><button class="btn btn-danger btn-sm" onclick="delBlog('${b._id}')">🗑 Xoá</button></td></tr>`).join('');
+}
+function resetBlogForm(){
+  ['blog-title','blog-content'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('blog-author').value='Admin';
+  document.getElementById('blog-img-inp').value='';
+  document.getElementById('blog-img-prev').style.display='none';
+}
+async function saveBlog(){
+  const fd=new FormData();
+  fd.append('title',document.getElementById('blog-title').value);
+  fd.append('content',document.getElementById('blog-content').value);
+  fd.append('author',document.getElementById('blog-author').value);
+  const img=document.getElementById('blog-img-inp').files[0];
+  if(img) fd.append('image',img);
+  const res=await fetch(API+'/blogs',{method:'POST',headers:{'Authorization':'Bearer '+TOKEN},body:fd});
+  const d=await res.json();
+  res.ok?(toast(d.message),closeModal('modal-blog'),loadBlogs()):toast(d.error,'error');
+}
+async function delBlog(id){
+  if(!confirm('Xoá bài viết?')) return;
+  const r=await fetch(API+'/blogs/'+id,{method:'DELETE',headers:hdrs()});
+  toast((await r.json()).message); loadBlogs();
+}
+
+// ── CONTACTS ──
+async function loadContacts(){
+  const cs=await fetch(API+'/contacts',{headers:hdrs()}).then(r=>r.ok?r.json():[]).catch(()=>[]);
+  const tb=document.getElementById('contacts-tbody');
+  if(!cs.length){tb.innerHTML='<tr><td colspan="6"><div class="empty-state"><span class="e-icon">💬</span><h4>Chưa có liên hệ</h4></div></td></tr>';return;}
+  tb.innerHTML=cs.map(c=>`<tr>
+    <td><strong>${c.name}</strong></td>
+    <td><a href="mailto:${c.email}" style="color:var(--info)">${c.email}</a></td>
+    <td>${c.subject||'—'}</td>
+    <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.message}</td>
+    <td>${fmt(c.createdAt)}</td>
+    <td><button class="btn btn-danger btn-sm" onclick="delContact('${c._id}')">🗑</button></td></tr>`).join('');
+}
+async function delContact(id){
+  if(!confirm('Xoá tin nhắn?')) return;
+  const r=await fetch(API+'/contacts/'+id,{method:'DELETE',headers:hdrs()});
+  toast((await r.json()).message); loadContacts();
+}
+
+// ── SETTINGS - EMAIL ──
+async function loadEmailConfig(){
+  const cfg=await fetch(API+'/email-config',{headers:hdrs()}).then(r=>r.ok?r.json():{enabled:false}).catch(()=>({enabled:false}));
+  const t=document.getElementById('toggle-email');
+  if(cfg.enabled) t.classList.add('on');
+  document.getElementById('em-user').value=cfg.user||'';
+  document.getElementById('em-pass').value=cfg.pass||'';
+}
+function toggleEl(el){ el.classList.toggle('on'); }
+async function saveEmail(){
+  const body={enabled:document.getElementById('toggle-email').classList.contains('on'),user:document.getElementById('em-user').value,pass:document.getElementById('em-pass').value,host:'smtp.gmail.com',port:587};
+  const r=await fetch(API+'/email-config',{method:'POST',headers:hdrs(),body:JSON.stringify(body)});
+  toast((await r.json()).message);
+}
+async function testEmail(){
+  const r=await fetch(API+'/email-test',{method:'POST',headers:hdrs()});
+  const d=await r.json();
+  r.ok?toast(d.message):toast(d.message,'error');
+}
+
+// ── SETTINGS - SECURITY ──
+async function changePassword(){
+  const o=document.getElementById('pw-old').value;
+  const n=document.getElementById('pw-new').value;
+  const c=document.getElementById('pw-confirm').value;
+  if(n!==c) return toast('Mật khẩu mới không khớp!','error');
+  if(n.length<6) return toast('Mật khẩu phải ít nhất 6 ký tự!','error');
+  const r=await fetch(API+'/auth/change-password',{method:'POST',headers:hdrs(),body:JSON.stringify({oldPassword:o,newPassword:n})});
+  const d=await r.json();
+  r.ok?toast(d.message):toast(d.error,'error');
+  if(r.ok){['pw-old','pw-new','pw-confirm'].forEach(id=>document.getElementById(id).value='');}
+}
+
+// ── SETTINGS - SITE INFO ──
+function saveSiteInfo(){
+  const info={name:document.getElementById('si-name').value,addr:document.getElementById('si-addr').value,phone:document.getElementById('si-phone').value,email:document.getElementById('si-email').value,fb:document.getElementById('si-fb').value,ig:document.getElementById('si-ig').value,hours:document.getElementById('si-hours').value,slogan:document.getElementById('si-slogan').value};
+  localStorage.setItem('cb_siteinfo',JSON.stringify(info));
+  toast('Đã lưu thông tin website!');
+  generateSiteInfoCode(info);
+}
+function loadSiteInfo(){
+  const info=JSON.parse(localStorage.getItem('cb_siteinfo')||'{}');
+  if(info.name) document.getElementById('si-name').value=info.name||'';
+  if(info.addr) document.getElementById('si-addr').value=info.addr||'';
+  if(info.phone) document.getElementById('si-phone').value=info.phone||'';
+  if(info.email) document.getElementById('si-email').value=info.email||'';
+  if(info.fb) document.getElementById('si-fb').value=info.fb||'';
+  if(info.ig) document.getElementById('si-ig').value=info.ig||'';
+  if(info.hours) document.getElementById('si-hours').value=info.hours||'';
+  if(info.slogan) document.getElementById('si-slogan').value=info.slogan||'';
+}
+function generateSiteInfoCode(info){
+  const code=`<!-- Footer thông tin - Paste vào footer HTML -->
+<div class="col-md">
+  <div class="ftco-footer-widget mb-4">
+    <h2 class="ftco-heading-2">${info.name||'CarBook'}</h2>
+    <p>${info.slogan||''}</p>
+  </div>
+</div>
+<div class="col-md">
+  <div class="ftco-footer-widget mb-4">
+    <h2 class="ftco-heading-2">Liên hệ</h2>
+    <div class="block-23 mb-3">
+      <ul>
+        <li><span class="icon icon-map-marker"></span><span class="text">${info.addr||''}</span></li>
+        <li><a href="tel:${info.phone||''}"><span class="icon icon-phone"></span><span class="text">${info.phone||''}</span></a></li>
+        <li><a href="mailto:${info.email||''}"><span class="icon icon-envelope"></span><span class="text">${info.email||''}</span></a></li>
+      </ul>
+    </div>
+  </div>
+</div>`;
+  document.getElementById('si-code').value=code;
+  document.getElementById('si-code-preview').style.display='block';
+}
+function copySiteInfoCode(){
+  const code=document.getElementById('si-code');
+  if(!code.value){saveSiteInfo();return;}
+  navigator.clipboard.writeText(code.value).then(()=>toast('Đã copy code HTML!')).catch(()=>toast('Copy thủ công từ textarea nhé','info'));
+}
+
+// ── MODAL OUTSIDE CLICK ──
+document.querySelectorAll('.modal-wrap').forEach(w=>{
+  w.addEventListener('click',e=>{if(e.target===w)w.classList.remove('open');});
+});
+
+// ── ENTER KEY ──
+document.getElementById('l-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded',()=>{
+  if(TOKEN){
+    fetch(API+'/bookings',{headers:hdrs()}).then(r=>{
+      if(r.status===401){TOKEN='';localStorage.removeItem('cb_token');return;}
+      document.getElementById('login-screen').style.display='none';
+      try{document.getElementById('sidebar-uname').textContent=JSON.parse(atob(TOKEN.split('.')[1])).username;}catch(e){}
+      loadDashboard(); loadSiteInfo();
+    }).catch(()=>{
+      document.getElementById('login-screen').style.display='none';
+      loadDashboard(); loadSiteInfo();
+    });
+  }
+  loadSiteInfo();
+});
+</script>
+</body>
+</html>
